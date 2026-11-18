@@ -1,0 +1,28 @@
+[package]
+name = "cartone"
+version = "0.1.0"
+readme = "README.md"
+edition = "2024"
+license = "Apache-2.0"
+description = "Cartone - generation broker MCP: a job queue and per-job cost ledger over image, video, and TTS generation routes, with per-route lane-eligibility gating"
+
+[dependencies]
+# rmcp is pinned to the fleet version (D-113 standardization): one
+# SDK version across every estate server; the server speaks the
+# modern protocol era only (2026-07-28); see src/guard.rs.
+rmcp = { version = "=3.8.0", default-features = false, features = ["server"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-std", "io-util", "sync", "time", "process"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+thiserror = "2"
+
+[profile.release]
+overflow-checks = true
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[dev-dependencies]
+serde_json = "1"
+tempfile = "3"
