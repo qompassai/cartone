@@ -1,0 +1,102 @@
+# Cartone route table — primo deployment (rung 2, 2026-11-18).
+#
+# Installed live at ~/.local/share/cartone/routes.toml on primo;
+# this copy is the versioned record of that table. Local routes are
+# wired to the estate's real engine invocations:
+#
+#   wai       the asset factory's ComfyUI lane (127.0.0.1:8191),
+#             driven by drivers/wai_txt2img.py (af.py's wf_sdxl
+#             recipe: waiIllustriousSDXL_v170, euler_ancestral,
+#             CFG 6.0). The template carries the route's standing
+#             smoke profile (fixed benign prompt, seed 42); per-job
+#             payloads are a later rung's design question — jobs
+#             today carry metadata only.
+#   ltx-video the img2video skill's local LTX route
+#             (drivers/local_i2v.py, the estate's proven 2026-10-12
+#             diffusers route) under ComfyUI's venv python +
+#             asset-factory pylibs, in its sequential-offload
+#             profile on the RTX 4070 (pinned by GPU UUID). The
+#             A6000 profile (the factory's ltx_gen.py, fully
+#             resident) is not used: the A6000 carries the standing
+#             rose server (~43.5 of 46 GiB), leaving no room for a
+#             resident LTX. Its --image is the standing smoke input
+#             (smoke/ltx-input.png under the data dir). The
+#             pylibs overlay carries imageio_ffmpeg 0.6.0 (copied
+#             2026-11-18 from the longcat-eval venv): diffusers'
+#             export_to_video needs it and no primo environment
+#             on this route had it — without it generation
+#             succeeds and only the MP4 write fails.
+#   kokoro    the factory's Kokoro driver (asset-factory/
+#             kokoro_driver.py, torori's voice-driver seam) under
+#             the factory venv; its --request is the standing
+#             smoke request (smoke/kokoro-request.json). Output is
+#             files only — the driver never opens a playback
+#             device (estate audio-silence rule).
+#
+# Unit costs are broker credits from the PLAN §2.3 table (rung 1),
+# not dollars: local routes spend primo time, not API credit.
+# Hosted routes stay disabled and SFW-only until their terms and
+# keys are configured — reported unavailable, never faked.
+
+[[route]]
+name = "wai"
+kind = "image"
+enabled = true
+lanes = ["sfw", "nsfw"]
+command = ["/home/phaedrus/ComfyUI/.venv/bin/python", "/home/phaedrus/.local/share/cartone/drivers/wai_txt2img.py", "--prompt", "a quiet mountain valley at dawn, a small lake reflecting soft light, pine forest, painterly landscape, no people", "--negative", "worst quality, low quality, blurry, distorted, text, watermark", "--seed", "42", "--width", "1024", "--height", "1024", "--out", "/home/phaedrus/.local/share/cartone/artifacts/{job_id}.png"]
+unit_cost = 1.0
+timeout_secs = 900
+
+[[route]]
+name = "ltx-video"
+kind = "video"
+enabled = true
+lanes = ["sfw", "nsfw"]
+command = ["/usr/bin/env", "PYTHONPATH=/home/phaedrus/.local/share/pax/asset-factory/pylibs", "CUDA_VISIBLE_DEVICES=GPU-3281fc60-e4c2-da28-9d27-da51a585c7b9", "/home/phaedrus/ComfyUI/.venv/bin/python", "/home/phaedrus/.local/share/cartone/drivers/local_i2v.py", "--image", "/home/phaedrus/.local/share/cartone/smoke/ltx-input.png", "--prompt", "slow gentle camera drift across a quiet mountain valley at dawn, soft clouds moving, calm water reflections", "--seed", "42", "--width", "768", "--height", "512", "--out", "/home/phaedrus/.local/share/cartone/artifacts/{job_id}.mp4"]
+unit_cost = 10.0
+timeout_secs = 1800
+
+[[route]]
+name = "kokoro"
+kind = "tts"
+enabled = true
+lanes = ["sfw", "nsfw"]
+command = ["/home/phaedrus/.local/share/pax/asset-factory/venv/bin/python", "/home/phaedrus/.local/share/pax/asset-factory/kokoro_driver.py", "--request", "/home/phaedrus/.local/share/cartone/smoke/kokoro-request.json", "--out", "/home/phaedrus/.local/share/cartone/artifacts/{job_id}"]
+unit_cost = 0.5
+timeout_secs = 900
+
+[[route]]
+name = "runway"
+kind = "video"
+enabled = false
+lanes = ["sfw"]
+command = []
+unit_cost = 25.0
+timeout_secs = 1800
+
+[[route]]
+name = "hailuo"
+kind = "video"
+enabled = false
+lanes = ["sfw"]
+command = []
+unit_cost = 20.0
+timeout_secs = 1800
+
+[[route]]
+name = "fal"
+kind = "image"
+enabled = false
+lanes = ["sfw"]
+command = []
+unit_cost = 5.0
+timeout_secs = 600
+
+[[route]]
+name = "grok"
+kind = "video"
+enabled = false
+lanes = ["sfw"]
+command = []
+unit_cost = 20.0
+timeout_secs = 1800

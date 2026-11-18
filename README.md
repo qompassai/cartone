@@ -82,8 +82,19 @@ unsupported-version error.
 ## Status
 
 Rung 1 (2026-11-18): the broker core is real — queue, ledger,
-gate, executor, MCP surface, agent card + `server.json`. Not yet
-wired: the local engines' command templates (operator
-configuration), hosted route enablement (terms + keys), a TUI,
-and client integrations (phlow consuming the broker as a client
-is the D4 follow-on).
+gate, executor, MCP surface, agent card + `server.json`.
+
+Rung 2 (2026-11-18): the three local routes are wired on the
+operator's machine and proven end-to-end through the MCP —
+`wai` (ComfyUI SDXL stills, via `drivers/wai_txt2img.py`),
+`ltx-video` (LTX-Video image-to-video, via the img2video
+skill's `drivers/local_i2v.py` in its sequential-offload
+profile), and `kokoro` (Kokoro TTS, the voice factory's
+driver). The operator route table ships as
+`routes.primo.toml`; `scripts/smoke_drive.py` re-runs the
+three-route smoke (one real job per route, artifacts verified
+by size + file magic, ledger read back). Route templates
+carry fixed standing inputs — per-job payloads are a later
+rung's design question. Still open: hosted route enablement
+(terms + keys), a TUI, and client integrations (phlow
+consuming the broker as a client is the D4 follow-on).
